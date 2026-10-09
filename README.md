@@ -12,27 +12,7 @@ Source for the PlayStation 3 boot chain, rebuilt with the original compilers to 
 | `lv2ldr` | lv2ldr 4.93 | 258 / 259 |
 | `appldr` | appldr 4.93 | 446 / 446 |
 
-## Compilers
-
-- PPU GCC 4.1.1 (SDK420): `lv0`
-- SPU GCC 4.1.1 (SDK420): `isoldr`, `lv1ldr`, `lv2ldr`, `appldr`
-- SPU GCC 4.0.2 (CELL 4.1.7): `lv0ldr`, `metldr`
-- SPU GCC 3.4.1 (CELL 2.2.1): crypto
-- SPU GCC 4.1.1 (CELL 4.1.2.6 Beta): `lv1ldr/encdec`
-
-No firmware is included.
-
-## Building
-
-Needs GNU make. Point it at the compilers' `bin` directories:
-
-```
-make SPU_GCC402_BIN=/path/to/spu/bin SPU_GCC341_BIN=/path/to/spu/bin
-```
-
-or set them once in `mk/local.mk` (ignored by git).
-
-The images land in `build/`. To compare them with the originals, put your own at `metldr/image/metldr.bin` and `lv0ldr/image/lv0ldr_1.0.0.bin`, then run `make check`.
+No firmware is included. See [BUILDING.md](BUILDING.md) to build.
 
 ## License
 
