@@ -1,7 +1,6 @@
 # lv0pen
 
-Source for the PlayStation 3 boot chain, rebuilt with the original
-compilers to the original code.
+Source for the PlayStation 3 boot chain, rebuilt with the original compilers to the original code.
 
 | | Program | Matching |
 |---|---|---|
