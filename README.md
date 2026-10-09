@@ -30,11 +30,9 @@ Needs GNU make. Point it at the compilers' `bin` directories:
 make SPU_GCC402_BIN=/path/to/spu/bin SPU_GCC341_BIN=/path/to/spu/bin
 ```
 
-The images land in `build/`. To compare them with the originals, put your
-own at `metldr/image/metldr.bin` and `lv0ldr/image/lv0ldr_1.0.0.bin`, then
-run `make check`.
+or set them once in `mk/local.mk` (ignored by git).
 
-`lv0ldr` and `metldr` build so far; the rest are coming.
+The images land in `build/`. To compare them with the originals, put your own at `metldr/image/metldr.bin` and `lv0ldr/image/lv0ldr_1.0.0.bin`, then run `make check`.
 
 ## License
 
