@@ -153,7 +153,7 @@ extern unsigned char g_part_digest[20];
 
 extern const unsigned char lv0_header_iv[16];
 extern const unsigned char lv0_header_key[32];
-extern const unsigned char lv0_public_key[];
+extern unsigned char lv0_public_key[40];
 extern const unsigned int lv0_curve;
 
 #endif

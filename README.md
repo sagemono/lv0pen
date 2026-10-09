@@ -22,6 +22,20 @@ Source for the PlayStation 3 boot chain, rebuilt with the original compilers to 
 
 No firmware is included.
 
+## Building
+
+Needs GNU make. Point it at the compilers' `bin` directories:
+
+```
+make SPU_GCC402_BIN=/path/to/spu/bin SPU_GCC341_BIN=/path/to/spu/bin
+```
+
+The images land in `build/`. To compare them with the originals, put your
+own at `metldr/image/metldr.bin` and `lv0ldr/image/lv0ldr_1.0.0.bin`, then
+run `make check`.
+
+`lv0ldr` and `metldr` build so far; the rest are coming.
+
 ## License
 
 GPL v3. `lv1ldr/zlib` is altered zlib 1.2.3 under its own license.

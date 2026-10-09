@@ -17,6 +17,11 @@ bool g_boot_nand;
 bool g_post_flag_80;
 bool g_post_flag_40;
 
+CXX_DROPPED void log_debug_device(const char *name)
+{
+    log_message("[INFO]: Connecting to Debug Device (%s)\n", name);
+}
+
 unsigned char get_boot_fir_config(void)
 {
     unsigned char v;

@@ -1,0 +1,7 @@
+#include "../io/sb_product.cpp"
+#include "../storage/eeprom_settings.cpp"
+#include "../syscon/sc_livelock.cpp"
+#include "../syscon/get_sc_version.cpp"
+#include "loader_platform.cpp"
+#include "loader_base.cpp"
+#include "loader_boot.cpp"

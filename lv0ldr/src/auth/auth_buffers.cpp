@@ -2,6 +2,7 @@
 #include "util.h"
 #include "verifier.h"
 
+vec_uchar16 g_part_area[512];
 unsigned char g_part_digest[20];
 
 long authenticator::verify_section_digest(const auth_section *p)

@@ -281,6 +281,79 @@ long syscon::initialize(u64 mmio_base, int proto_ver, bool detect)
     return 0;
 }
 
+CXX_DROPPED long syscon::send_and_receive_safe(u32 id, const void *req, u32 req_len, void *resp, u32 resp_max, int *resp_len, int flags)
+{
+    FUNCTION_NAME("send_and_receive_safe");
+    int receive_id;
+    bool ok;
+    int ret, wait_rc;
+    u32 sid;
+
+    if (!this->base)
+        return -1;
+
+    ok = false;
+    struct sc_msg_ids ids = { ++g_sc_transaction_id };
+    ids.communication_tag = ++g_sc_communication_tag;
+
+    for (;;) {
+        ret = write_init_msg(id, req, req_len, &ids);
+        if (ret != -16) {
+            if (ret != 0) {
+                uart_printf("%s: write_init_msg fail %d\n", function_name, ret);
+                return -4;
+            }
+            ok = true;
+        }
+        raise_sc_interrupt(0);
+        wait_rc = wait_swbint(2);
+        if (wait_rc == 0) {
+            if (ok)
+                break;
+        } else
+            uart_printf("%s: wait_swbint(0) returns unknown value %d\n", function_name, wait_rc);
+    }
+
+    receive_id = id;
+    ret = read_stat_msg(&receive_id);
+    if (ret) {
+        uart_printf("%s: read_stat_msg fail %d\n", function_name, ret);
+        return -2;
+    }
+    sid = receive_id;
+
+    for (;;) {
+        int cmpl_rc;
+        bool valid;
+        wait_rc = wait_swbint(1);
+        if (wait_rc) {
+            uart_printf("%s: wait_swbint(0) returns unknown value %d\n", function_name, wait_rc);
+            continue;
+        }
+        cmpl_rc = read_cmpl_msg(&receive_id, resp, resp_max, resp_len, &ids);
+        if (cmpl_rc == -16) {
+            uart_printf("%s: read_cmpl_msg fail %d\n", function_name, -16);
+            return -16;
+        }
+        if (cmpl_rc == 0)
+            valid = (receive_id == sid && ids.transaction_id == g_sc_transaction_id && ids.communication_tag == g_sc_communication_tag);
+        else {
+            u16 rc_next = read16(this->base + SC_MMIO_SC_RC + 2) + 1;
+            write32(this->base + SC_MMIO_SC_RC, rc_next | (rc_next << 16));
+            valid = 0;
+        }
+        ret = write_stat_msg(sid);
+        if (ret) {
+            uart_printf("%s: write_stat_msg fail %d\n", function_name, ret);
+            return -2;
+        }
+        raise_sc_interrupt(1);
+        if (valid)
+            return 0;
+        uart_printf("%s: skip cmpl err %d, receive_id %d, transaction_id %d, communication_tag %d\n", function_name, 0, receive_id, g_sc_transaction_id, g_sc_communication_tag);
+    }
+}
+
 long syscon::send_and_receive(unsigned int id, const void *req, unsigned int req_len, void *resp, unsigned int resp_max, int *resp_len, int flags)
 {
     FUNCTION_NAME("send_and_receive");

@@ -7,7 +7,7 @@ entry:
 	bi	$14
 	.size	entry, .-entry
 
-	.align	4
+	.align	4,0
 	.global	leave
 	.type	leave, @function
 leave:
@@ -29,3 +29,7 @@ leave:
 	.endr
 	bi	$3
 	.size	leave, .-leave
+
+	.section .data,"aw",@progbits
+	.align	4
+	.long	0

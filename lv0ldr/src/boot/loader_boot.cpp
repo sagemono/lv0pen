@@ -10,14 +10,9 @@
 #include "uart.h"
 #include "nand_flash.h"
 #include "systemio_dmac.h"
-#include "dma_stream.h"
 #include "xdr.h"
-#include "aes.h"
 
 u64 g_ss2_work_offset = 0x80;
-
-unsigned int g_read_buffers[4] = { 0x3E000, 0x3E800, 0x3F000, 0x3F800 };
-unsigned int g_write_buffer = 0x3E000;
 
 #define BE (0x20000000000ULL)
 
@@ -213,7 +208,6 @@ void configure_be_errors(bool enable, bool livelock)
     write64(BE + 0x508500, (u64)-1);
     write64(BE + 0x508518, 0);
     if (enable) {
-        u64 v;
         switch (get_first_spu_priv1_20()) {
         case 0x100:
         case 0x200:
@@ -221,18 +215,18 @@ void configure_be_errors(bool enable, bool livelock)
                 write64(BE + 0x508510, 0x070FB0FB03D03D1FULL);
             else
                 write64(BE + 0x508510, 0x070FB0FB03F03F1FULL);
-            v = 0xFFFF00000000F000ULL;
+            write64(BE + 0x512010, 0xFFFF00000000F000ULL);
+            write64(BE + 0x513010, 0xFFFF00000000F000ULL);
             break;
         default:
             if (livelock)
                 write64(BE + 0x508510, 0x070FF0FF03D03D1FULL);
             else
                 write64(BE + 0x508510, 0x070FF0FF03F03F1FULL);
-            v = 0xFFFF000000001000ULL;
+            write64(BE + 0x512010, 0xFFFF000000001000ULL);
+            write64(BE + 0x513010, 0xFFFF000000001000ULL);
             break;
         }
-        write64(BE + 0x512010, v);
-        write64(BE + 0x513010, v);
     } else {
         write64(BE + 0x508510, 0);
     }
@@ -314,241 +308,4 @@ void loader_base::initialize(void)
         write64(BE + 0x511C00, 0x10000800);
     else
         write64(BE + 0x511C00, 0x800);
-}
-
-long ata_activation(u64 addr, u64 size)
-{
-    return 0;
-}
-
-void memory_config_query::initialize(void)
-{
-}
-
-long memory_config_query::is_str(bool *str)
-{
-    unsigned char requested_os, current_os, requested_gr, current_gr, last_shutdown;
-    unsigned int wake_source;
-    long rc = syscon_get_wake_info(&requested_os, &current_os, &requested_gr, &current_gr,
-                                   &last_shutdown, &wake_source);
-    if (rc) {
-        log_message("[INFO]: query_system_power_up_cause failed.\n");
-        *str = false;
-        return -1;
-    }
-    log_info("[INFO]: query_system_power_up_cause returns successfully.\n");
-    log_info("[INFO]: requested_os_context: 0x%02x\n", requested_os);
-    log_info("[INFO]: current_os_context  : 0x%02x\n", current_os);
-    log_info("[INFO]: requested_gr_context: 0x%02x\n", requested_gr);
-    log_info("[INFO]: current_gr_context  : 0x%02x\n", current_gr);
-    log_info("[INFO]: last_shutdown_cause : 0x%02x\n", last_shutdown);
-    log_info("[INFO]: wake_source         : 0x%08x\n", wake_source);
-    if (requested_os == 1 && current_os == 1)
-        *str = true;
-    else
-        *str = false;
-    return 0;
-}
-
-long memory_config_query::query_config(memory_config *cfg)
-{
-    long rc = syscon_read_xdr_config(cfg);
-    log_info("[INFO]: xdr::query_config (basic) returns 0x%08lx\n", rc);
-    if (rc) {
-        log_message("[INFO]: (0x%08x) sc_config_info::xdr::query_config failed.\n", rc);
-        return -1;
-    }
-    rc = is_str(&cfg->str);
-    if (rc) {
-        log_message("[INFO]: (0x%08x) is_str() failed\n", rc);
-        return -1;
-    }
-    cfg->f_84 = 0x10000;
-    rc = syscon_get_xdr_clock(&cfg->xio_ref_clk, false);
-    if (rc) {
-        log_message("[INFO]: (0x%08x) sc_config_info::xdr::get_reference_clock() failed\n", rc);
-        return -1;
-    }
-    rc = syscon_get_ref_clock(&cfg->be_ref_clk, false);
-    if (rc) {
-        log_message("[INFO]: (0x%08x) sc_config_info::be::get_reference_clock() failed\n", rc);
-        return -1;
-    }
-    rc = syscon_get_core_clock_multiplier(&cfg->be_pll_multiplier);
-    if (rc) {
-        log_message("[INFO]: (0x%08x) sc_config_info::be::get_be_pll_multiply() failed\n", rc);
-        return -1;
-    }
-    log_info("[INFO]: b_str: bool(%d)\n", cfg->str);
-    log_info("[INFO]: xio_ref_clk: %d MHz\n", cfg->xio_ref_clk / 1000000);
-    log_info("[INFO]: be_ref_clk: %d MHz\n", cfg->be_ref_clk / 1000000);
-    log_info("[INFO]: be_pll_multiplier: %lld\n", cfg->be_pll_multiplier);
-    log_debug("[INFO]: dump basic_config byte stream: size %d\n", 128);
-    unsigned char *b = cfg->basic;
-    for (int i = 0; i < 128; i++) {
-        log_debug("%02x:", *b++);
-        if ((i & 15) == 15)
-            log_debug("\n");
-    }
-    log_debug("[INFO]: ------------------------------- dump end\n");
-    return 0;
-}
-
-class memory_tester {
-public:
-    memory_tester();
-    long comp_memory(u64 ea, u64 size, const qword *expect);
-    long fill(u64 ea, u64 size);
-
-    tagged_dma_buffer buf0, buf1, buf2, buf3, buf4;
-    dma_buffer *bufs[5];
-    dma_queue queue;
-};
-
-memory_tester::memory_tester()
-    : buf0(0), buf1(1), buf2(2), buf3(3), buf4(4)
-{
-    tagged_dma_buffer *readers[4] = { &buf1, &buf2, &buf3, &buf4 };
-    bufs[0] = &buf0;
-    buf0.set_buffer(g_write_buffer, 0x2000);
-    for (int i = 0; i < 4; i++) {
-        bufs[i + 1] = readers[i];
-        readers[i]->set_buffer(g_read_buffers[i], 0x800);
-    }
-}
-
-long memory_tester::comp_memory(u64 ea, u64 size, const qword *expect)
-{
-    FUNCTION_NAME("comp_memory");
-    dma_buffer *b;
-    unsigned char last = 0;
-
-    queue.open(ea, size, ea, size);
-    for (int i = 0; i < 4; i++)
-        queue.enqueue_read(bufs[i + 1]);
-    for (u64 addr = ea; addr < ea + size; addr += 0x2000) {
-        const qword *e = expect;
-        for (int n = 0; n < 4; n++) {
-            long rc = queue.dequeue_read(&b);
-            if (rc == 1)
-                last = 1;
-            else if (rc) {
-                log_message("[ERROR]: %s dequeue_read %d\n", function_name, rc);
-                return -2;
-            }
-            const qword *a = (const qword *)b->ls;
-            for (u64 off = 0; off < b->size; off += 16, e++, a++) {
-                if (si_to_uint(si_gbb(si_ceqb(*e, *a))) != 0xFFFF) {
-                    qword x = *(const volatile qword *)a, y = *(const volatile qword *)e;
-                    log_message("[cmp fail address 0x%08llx, actual(%016llx_%016llx), expect(%016llx_%016llx)]\n",
-                                addr + off + 0x2000,
-                                si_to_ullong(x), si_to_ullong(si_rotqbyi(x, 8)),
-                                si_to_ullong(y), si_to_ullong(si_rotqbyi(y, 8)));
-                    return -1;
-                }
-            }
-            if (last == 1)
-                break;
-            rc = queue.enqueue_read(b);
-            if (rc) {
-                log_message("[ERROR]: %s enqueue_write %d\n", function_name, rc);
-                return -2;
-            }
-            last = 0;
-        }
-    }
-    queue.close();
-    return 0;
-}
-
-u64 get_memory_size(void)
-{
-    u64 mb0 = ((read64(BE + 0x50A0C8) >> 54) + 1) * 32;
-    u64 mb1 = ((read64(BE + 0x50A188) >> 54) + 1) * 32;
-    return (mb0 + mb1) << 20;
-}
-
-long memory_tester::fill(u64 ea, u64 size)
-{
-    qword tag = si_from_uint(0);
-    dma_buffer *b = bufs[0];
-    unsigned int ls = b->ls;
-    unsigned int n = b->size;
-    for (u64 addr = ea; addr < ea + size; addr += 0x2000) {
-        spu_writech(MFC_LSA, ls);
-        spu_writech(MFC_EAH, addr >> 32);
-        spu_writech(MFC_EAL, addr);
-        spu_writech(MFC_Size, n);
-        si_wrch(MFC_TagID, tag);
-        spu_writech(MFC_Cmd, MFC_PUT_CMD);
-    }
-    mfc_write_tag_update_immediate();
-    while (spu_readchcnt(MFC_WrTagUpdate) != 1)
-        ;
-    spu_readch(MFC_RdTagStat);
-    mfc_write_tag_mask(1 << 0);
-    mfc_write_tag_update_all();
-    mfc_read_tag_status();
-    return 0;
-}
-
-bool memory_diag(u64 size, unsigned int unused1, u64 unused2, unsigned char mode)
-{
-    qword expect[512];
-    memory_tester t;
-    qword *buf = (qword *)g_write_buffer;
-    char line[] = "=====================================\n";
-
-    log_message("%s", line);
-    vec_uchar16 key = { 0 };
-    vec_uchar16 iv = { 0 };
-    log_message("[begin: cmp random data]\n");
-    for (u64 addr = 0; addr < size; addr += 0x2000000) {
-        memset(buf, 0, 0x2000);
-        aes_cbc_encrypt((vec_uchar16 *)buf, (vec_uchar16 *)buf, 0x2000, (unsigned char *)&key, 128, &iv);
-        t.fill(addr, 0x2000000);
-        log_message("w");
-    }
-    log_message("\n");
-    int fails = 0;
-    for (u64 addr = 0; addr < size; addr += 0x2000000) {
-        memset(expect, 0, 0x2000);
-        aes_cbc_encrypt((vec_uchar16 *)expect, (vec_uchar16 *)expect, 0x2000, (unsigned char *)&key, 128, &iv);
-        long rc = t.comp_memory(addr, 0x2000000, expect);
-        if (rc == -1) {
-            fails++;
-            if (!mode)
-                return false;
-        } else if (rc)
-            return false;
-        log_message("r");
-    }
-    log_message("\n[end: cmp random data]\n");
-    unsigned char patterns[8] = { 0x00, 0xFF, 0x55, 0xAA, 0xCC, 0x33, 0x99, 0x66 };
-    for (u64 i = 0; i < 8; i++) {
-        log_message("%s", line);
-        unsigned char p = patterns[i];
-        log_message("[begin: cmp fix data(%02x)]\n", p);
-        for (u64 addr = 0; addr < size; addr += 0x2000000) {
-            for (u64 j = 0; j < 0x2000; j += 0x100)
-                memset(&buf[j / 16], patterns[(i + j / 0x100) % 8], 0x100);
-            t.fill(addr, 0x2000000);
-            log_message("w");
-        }
-        log_message("\n");
-        for (u64 addr = 0; addr < size; addr += 0x2000000) {
-            for (u64 j = 0; j < 0x2000; j += 0x100)
-                memset(&expect[j / 16], patterns[(i + j / 0x100) % 8], 0x100);
-            long rc = t.comp_memory(addr, 0x2000000, expect);
-            if (rc == -1) {
-                fails++;
-                if (!mode)
-                    return false;
-            } else if (rc)
-                return false;
-            log_message("r");
-        }
-        log_message("\n[end: cmp fix data(%02x)]\n", p);
-    }
-    return fails == 0;
 }

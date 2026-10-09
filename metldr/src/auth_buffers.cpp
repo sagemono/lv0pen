@@ -2,6 +2,8 @@
 #include "util.h"
 #include "verifier.h"
 
+unsigned char verify_hash[20];
+vec_uchar16 g_part_area[128];
 unsigned char g_part_digest[20];
 
 long authenticator::verify_section_digest(const auth_section *p)

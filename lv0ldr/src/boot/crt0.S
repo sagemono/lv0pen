@@ -47,3 +47,8 @@ _start:
 	.align	2
 __CTOR_LIST__:
 	.long	-1
+
+	.section .dtors,"aw",@progbits
+	.align	2
+__DTOR_LIST__:
+	.long	-1

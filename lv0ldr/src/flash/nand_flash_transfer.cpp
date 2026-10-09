@@ -1,6 +1,7 @@
 #include "nand_flash.h"
 #include "systemio_dmac.h"
 #include "errors.h"
+#include "util.h"
 
 void syscon_printf(const char *fmt, ...);
 
@@ -24,6 +25,49 @@ int set_nand_flash_ready_callback(nand_flash_ready_fn callback)
 {
     g_nand_flash_ready_callback = callback;
     return 0;
+}
+
+CXX_DROPPED long nand_flash_ctrl::read_sectors_poll(char *buf, u32 sector, u32 count, nand_flash_ready_fn ready)
+{
+    nand_flash_ctrl *dev;
+    int rc;
+    int ret = -3;
+    int i;
+    if (g_nand_flash_ready_callback == 0)
+        goto out;
+    dev = get_nand_flash_ctrl();
+    ret = 0;
+    rc = dev->start_read_sector(sector, count, 9);
+    if (__builtin_expect(rc != 0, 0)) {
+        ret = -1;
+        syscon_printf("[ERROR] 0x%08x %s(%d) start_read_sector %d, stataus %08x\n", LV0_ERR_FLASH, __FUNCTION__, 39, rc, dev->get_status());
+        goto out;
+    }
+    for (i = 0; (u32)i < count; i++) {
+        while (!ready())
+            ;
+        rc = dev->read_sector((unsigned short *)(buf + ((u32)i << 9)), 0);
+        if (rc != 0) {
+            ret = -1;
+            syscon_printf("[ERROR] 0x%08x %s(%d) read_sector %d, stataus %08x\n", LV0_ERR_FLASH, __FUNCTION__, 48, rc, dev->get_status());
+            goto out;
+        }
+    }
+    while (!ready())
+        ;
+    rc = dev->start_idle();
+    if (rc != 0) {
+        ret = -1;
+        syscon_printf("[ERROR] 0x%08x %s(%d) start_idle %d, stataus %08x\n", LV0_ERR_FLASH, __FUNCTION__, 58, rc, dev->get_status());
+        goto out;
+    }
+    while (!ready())
+        ;
+    ret = dev->idle();
+    if (ret != 0)
+        syscon_printf("[ERROR] 0x%08x %s(%d) idle %d, stataus %08x\n", LV0_ERR_FLASH, __FUNCTION__, 65, ret, dev->get_status());
+out:
+    return ret;
 }
 
 long nand_flash_ctrl::read_sectors_dma(unsigned long io_addr, u32 sector, u32 count, nand_flash_ready_fn ready)

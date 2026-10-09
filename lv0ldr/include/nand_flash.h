@@ -14,7 +14,9 @@ public:
     long idle();
     long start_read_sector(unsigned int sector, unsigned short count, unsigned short cmd);
     long start_idle();
+    long read_sector(unsigned short *buf, int unused);
 
+    static long read_sectors_poll(char *buf, u32 sector, u32 count, nand_flash_ready_fn ready);
     static long read_sectors_dma(unsigned long io_addr, u32 sector, u32 count, nand_flash_ready_fn ready);
     static long read_sector_dma(unsigned long io_addr, unsigned int sector, unsigned int count);
 
