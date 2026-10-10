@@ -272,27 +272,6 @@ long loader::load_header()
     return r;
 }
 
-long loader::check_revoke_list()
-{
-    long r;
-
-    r = m_list->load((const void *)m_buf);
-    if (r)
-        return r;
-    r = m_list->open(g_list_key, g_list_iv, g_list_pub, &g_list_curve);
-    memset(g_list_key, 0, 32);
-    memset(g_list_iv, 0, 16);
-    if (r)
-        return r;
-    r = m_list->parse();
-    if (r)
-        return r;
-    r = m_list->check_version(0x0004009300000000ULL);
-    if (r)
-        r = 22;
-    return r;
-}
-
 long loader::load_segments(void (**entry)(void))
 {
     tagged_dma_buffer b0(0), b1(1);
@@ -331,6 +310,27 @@ long loader::load_segments(void (**entry)(void))
             return r;
     }
     return 0;
+}
+
+long loader::check_revoke_list()
+{
+    long r;
+
+    r = m_list->load((const void *)m_buf);
+    if (r)
+        return r;
+    r = m_list->open(g_list_key, g_list_iv, g_list_pub, &g_list_curve);
+    memset(g_list_key, 0, 32);
+    memset(g_list_iv, 0, 16);
+    if (r)
+        return r;
+    r = m_list->parse();
+    if (r)
+        return r;
+    r = m_list->check_version(0x0004009300000000ULL);
+    if (r)
+        r = 22;
+    return r;
 }
 
 long loader::load(void (**entry)(void))

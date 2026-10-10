@@ -113,7 +113,6 @@ uLong ZEXPORT adler32(adler, buf, len)
     return adler | (sum2 << 16);
 }
 
-#if 0
 uLong ZEXPORT adler32_combine(adler1, adler2, len2)
     uLong adler1;
     uLong adler2;
@@ -135,4 +134,3 @@ uLong ZEXPORT adler32_combine(adler1, adler2, len2)
     if (sum2 > BASE) sum2 -= BASE;
     return sum1 | (sum2 << 16);
 }
-#endif

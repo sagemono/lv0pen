@@ -1,5 +1,4 @@
 	.section .text.scrub,"ax",@progbits
-	.align	3
 	.global	scrub_and_jump
 	.type	scrub_and_jump, @function
 scrub_and_jump:

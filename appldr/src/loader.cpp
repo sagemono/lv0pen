@@ -305,6 +305,27 @@ bool loader::is_kind_d(const auth_app_info *app, const auth_flags &f, const auth
     return false;
 }
 
+long loader::check_revoke_list(revoke_list *list, const void *src)
+{
+    long r;
+
+    if (!list || !src)
+        return 21;
+    r = list->load(src);
+    if (r)
+        return r;
+    r = list->open(g_keyset_key, g_keyset_iv, g_list_pub, &g_list_curve);
+    if (r)
+        return r;
+    r = list->parse();
+    if (r)
+        return r;
+    r = list->check_version(0x0004009300000000ULL);
+    if (r)
+        r = 22;
+    return r;
+}
+
 bool loader::has_flags(const auth_flags &f, const auth_flags &want)
 {
     auth_flags x = f;
@@ -590,27 +611,6 @@ long loader::read_qa_flag(unsigned int revision, const unsigned char *id,
         *have = 1;
     }
     return 0;
-}
-
-long loader::check_revoke_list(revoke_list *list, const void *src)
-{
-    long r;
-
-    if (!list || !src)
-        return 21;
-    r = list->load(src);
-    if (r)
-        return r;
-    r = list->open(g_keyset_key, g_keyset_iv, g_list_pub, &g_list_curve);
-    if (r)
-        return r;
-    r = list->parse();
-    if (r)
-        return r;
-    r = list->check_version(0x0004009300000000ULL);
-    if (r)
-        r = 22;
-    return r;
 }
 
 long loader::prepare()

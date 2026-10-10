@@ -1,0 +1,18 @@
+LV0_SLOTS := lv1ldr lv2ldr isoldr appldr lv1ldr_2 lv2ldr_2 isoldr_2 appldr_2
+
+LV0_SLOT_ADDR_lv1ldr := 0x8044B74
+LV0_SLOT_SIZE_lv1ldr := 0x26CD0
+LV0_SLOT_ADDR_lv2ldr := 0x806B844
+LV0_SLOT_SIZE_lv2ldr := 0x18AEC
+LV0_SLOT_ADDR_isoldr := 0x8084330
+LV0_SLOT_SIZE_isoldr := 0x146F0
+LV0_SLOT_ADDR_appldr := 0x8098A20
+LV0_SLOT_SIZE_appldr := 0x27A38
+LV0_SLOT_ADDR_lv1ldr_2 := 0x80C0458
+LV0_SLOT_SIZE_lv1ldr_2 := 0x580
+LV0_SLOT_ADDR_lv2ldr_2 := 0x80C09D8
+LV0_SLOT_SIZE_lv2ldr_2 := 0x580
+LV0_SLOT_ADDR_isoldr_2 := 0x80C0F58
+LV0_SLOT_SIZE_isoldr_2 := 0x480
+LV0_SLOT_ADDR_appldr_2 := 0x80C13D8
+LV0_SLOT_SIZE_appldr_2 := 0x580
