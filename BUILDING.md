@@ -38,14 +38,11 @@ SPU_GCC341_BIN := /path/to/spu/bin
 
 ## lv0's modules
 
-lv0 embeds isoldr, lv2ldr and appldr as SELFs. The build encrypts its own
-builds of them with scetool, so their bytes differ from the original's (the
-keys and signature are new each time). lv1ldr's slot and the four second
-headers stay zero for now.
+lv0 embeds isoldr, lv2ldr and appldr as SELFs. The build encrypts its own builds of them with scetool, so their bytes differ from the original's (the keys and signature are new each time). lv1ldr's slot and the four second headers stay zero for now.
 
 ## Comparing
 
-`make check` needs your own images:
+`make check` needs your own images removed from CORE_OS_PACKAGE.pkg:
 
 - `lv0/lv0_ida/lv0.elf`
 - `lv0ldr/image/lv0ldr_1.0.0.bin`
@@ -57,7 +54,4 @@ headers stay zero for now.
 lv0 is compared byte for byte outside its module slots; each slot is checked
 by decrypting both the built and the original SELF.
 
-lv0ldr and metldr's images are local store dumps. lv0ldr's check allows the
-16 bytes of `.data` the loader changes as it runs (`lv0ldr/lv0ldr.written`).
-lv2ldr's allows the 20 bytes of the one function that does not match yet
-(`lv2ldr/lv2ldr.unmatched`).
+lv0ldr and metldr's images are local store dumps. lv0ldr's check allows the 16 bytes of `.data` the loader changes as it runs (`lv0ldr/lv0ldr.written`). lv2ldr's allows the 20 bytes of the one function that does not match yet (`lv2ldr/lv2ldr.unmatched`).
