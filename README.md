@@ -15,6 +15,7 @@ Source for the PlayStation 3 boot chain and its isolated SPU modules, rebuilt wi
 | `spu_token_processor` | spu_token_processor 4.93 | 104 / 106 |
 | `spu_utoken_processor` | spu_utoken_processor 4.93 | 72 / 75 |
 | `spu_pkg_rvk_verifier` | spu_pkg_rvk_verifier 4.93 | 165 / 171 |
+| `aim_spu_module` | aim_spu_module 4.93 | 39 / 41 |
 
 No firmware is included. See [BUILDING.md](BUILDING.md) to build.
 
