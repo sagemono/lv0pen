@@ -1,6 +1,6 @@
 # lv0pen
 
-Source for the PlayStation 3 boot chain, rebuilt with the original compilers to the original code.
+Source for the PlayStation 3 boot chain and its isolated SPU modules, rebuilt with the original compilers to the original code.
 
 | | Program | Matching |
 |---|---|---|
@@ -11,6 +11,10 @@ Source for the PlayStation 3 boot chain, rebuilt with the original compilers to 
 | `lv1ldr` | lv1ldr 4.93 | 293 / 300 |
 | `lv2ldr` | lv2ldr 4.93 | 258 / 259 |
 | `appldr` | appldr 4.93 | 446 / 446 |
+| `spp_verifier` | spp_verifier 4.93 | 139 / 141 |
+| `spu_token_processor` | spu_token_processor 4.93 | 104 / 106 |
+| `spu_utoken_processor` | spu_utoken_processor 4.93 | 72 / 75 |
+| `spu_pkg_rvk_verifier` | spu_pkg_rvk_verifier 4.93 | 165 / 171 |
 
 No firmware is included. See [BUILDING.md](BUILDING.md) to build.
 

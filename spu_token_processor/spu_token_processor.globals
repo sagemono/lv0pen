@@ -1,0 +1,15 @@
+00009cf0 g_eid_ls
+00009d00 g_default_idps
+00009d10 g_token_key
+00009d30 g_token_hmac_key
+00009d70 g_token_pub
+00009da0 eid0_seed_a
+00009db0 eid0_seed_0
+0000a1f0 ec_curves
+0000c040 _ZTV11dma_channel
+0000c050 shuffle_table
+0000c1a0 g_token_iv
+0000c1b0 g_token_curve
+0000c1c0 g_heap
+0000c1d0 g_atexit_count
+0000c1e0 g_atexit_handlers
