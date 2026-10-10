@@ -237,16 +237,26 @@ $(LV0_OBJ_DIR)/lv0/src/component/component_loaders.s: LV0_EDIT = \
 $(LV0_OBJ_DIR)/lv0/src/flash/spansion_storage.s: LV0_EDIT = \
 	$(call lv0_same_as,_ZN16spansion_storageC2Ev,_ZN16spansion_storageC1Ev)
 
-LV0_SELF_SLOTS := lv2ldr isoldr appldr
+LV0_PLAIN_SLOTS := lv2ldr isoldr appldr
+LV0_SELF_SLOTS := lv1ldr $(LV0_PLAIN_SLOTS)
 LV0_ZERO_SLOTS := $(filter-out $(LV0_SELF_SLOTS),$(LV0_SLOTS))
 LV0_SELF_DIR := $(LV0_OUT)/self
 
+LV0_OBJCOPY := $(PPU_GCC411_SDK420_BIN)/ppu-lv2-objcopy
+LV0_EXE := $(if $(filter Windows_NT,$(OS)),.exe)
+LV0_CTR := $(LV0_OUT)/host/lv1ldr_ctr$(LV0_EXE)
+LV0_CTR_SRCS := lv0/host/lv1ldr_ctr.c lv0/src/util/aes.c lv0/src/util/aes_tables.c
+LV0_VEC := $(LV0_OUT)/vec.bin
+
+LV0_SELF_ELF_lv1ldr := $(LV1LDR_STRIPPED)
 LV0_SELF_ELF_lv2ldr := $(LV2LDR_STRIPPED)
 LV0_SELF_ELF_isoldr := $(ISOLDR_STRIPPED)
 LV0_SELF_ELF_appldr := $(APPLDR_STRIPPED)
+LV0_SELF_AUTH_ID_lv1ldr := 1FF0000008000001
 LV0_SELF_AUTH_ID_lv2ldr := 1FF0000009000001
 LV0_SELF_AUTH_ID_isoldr := 1FF000000A000001
 LV0_SELF_AUTH_ID_appldr := 1FF000000C000001
+LV0_SELF_UNMATCHED_lv1ldr := $(LV1LDR_UNMATCHED)
 LV0_SELF_UNMATCHED_lv2ldr := $(LV2LDR_UNMATCHED)
 LV0_SLOT_BINS := $(addprefix $(LV0_EMBED_DIR)/,$(addsuffix .bin,$(LV0_SLOTS)))
 
@@ -275,6 +285,14 @@ $(LV0_OBJ_DIR)/$(LV0_EMBEDDED:.S=.o): $(LV0_EMBEDDED) $(LV0_SLOT_BINS)
 	@mkdir -p $(@D)
 	$(LV0_CC) $(LV0_CFLAGS) -Wa,-I$(LV0_OUT) -c $< -o $@
 
+$(LV0_CTR): $(LV0_CTR_SRCS) lv0/include/aes.h
+	@mkdir -p $(@D)
+	$(HOST_CC) -O2 -Ilv0/include -o $@ $(LV0_CTR_SRCS)
+
+$(LV0_VEC): $(LV0_START_OBJ)
+	$(LV0_OBJCOPY) -O binary -j .vec $< $@
+
+$(LV0_EMBED_DIR)/lv1ldr.self: $(LV0_SELF_ELF_lv1ldr)
 $(LV0_EMBED_DIR)/lv2ldr.self: $(LV0_SELF_ELF_lv2ldr)
 $(LV0_EMBED_DIR)/isoldr.self: $(LV0_SELF_ELF_isoldr)
 $(LV0_EMBED_DIR)/appldr.self: $(LV0_SELF_ELF_appldr)
@@ -286,7 +304,7 @@ $(addprefix $(LV0_EMBED_DIR)/,$(addsuffix .self,$(LV0_SELF_SLOTS))):
 	( $(LV0_SCETOOL) $(LV0_SCETOOL_FLAGS) -3 $(LV0_SELF_AUTH_ID_$(basename $(@F))) --encrypt $(abspath $<) $(abspath $@) ) > $@.log
 	@if [ ! -s $@ ]; then cat $@.log; echo "lv0: scetool made no $@"; exit 1; fi
 
-$(addprefix $(LV0_EMBED_DIR)/,$(addsuffix .bin,$(LV0_SELF_SLOTS))): %.bin: %.self
+$(addprefix $(LV0_EMBED_DIR)/,$(addsuffix .bin,$(LV0_PLAIN_SLOTS))): %.bin: %.self
 	@size=$$(wc -c < $<); slot=$$(( $(LV0_SLOT_SIZE_$(basename $(@F))) )); \
 	if [ $$size -gt $$slot ]; then \
 		echo "lv0: $< is $$size bytes, larger than the $(basename $(@F)) slot ($$slot bytes)"; \
@@ -294,6 +312,9 @@ $(addprefix $(LV0_EMBED_DIR)/,$(addsuffix .bin,$(LV0_SELF_SLOTS))): %.bin: %.sel
 	fi
 	cp $< $@
 	truncate -s $$(( $(LV0_SLOT_SIZE_$(basename $(@F))) )) $@
+
+$(LV0_EMBED_DIR)/lv1ldr.bin: $(LV0_EMBED_DIR)/lv1ldr.self $(LV0_CTR) $(LV0_VEC)
+	$(LV0_CTR) $(LV0_VEC) $< $@ $(LV0_SLOT_SIZE_lv1ldr)
 
 $(addprefix $(LV0_EMBED_DIR)/,$(addsuffix .bin,$(LV0_ZERO_SLOTS))):
 	@mkdir -p $(@D)
@@ -303,8 +324,8 @@ $(addprefix $(LV0_EMBED_DIR)/,$(addsuffix .bin,$(LV0_ZERO_SLOTS))):
 $(LV0_ELF): $(LV0_OBJS) $(LV0_LDSCRIPT)
 	$(LV0_LD) -T $(LV0_LDSCRIPT) -o $@ -EB -e _start --no-check-sections -Map $(LV0_MAP) $(LV0_OBJS)
 
-check-lv0: $(LV0_ELF) $(LV0_IMAGE) $(addprefix $(LV0_EMBED_DIR)/,$(addsuffix .self,$(LV0_SELF_SLOTS)))
-	@$(foreach s,$(LV0_SLOTS),printf 'lv0: slot %-8s %s %7d bytes  %s\n' $(s) $(LV0_SLOT_ADDR_$(s)) $$(( $(LV0_SLOT_SIZE_$(s)) )) "$(if $(filter $(s),$(LV0_SELF_SLOTS)),$(LV0_EMBED_DIR)/$(s).self ($$(wc -c < $(LV0_EMBED_DIR)/$(s).self) bytes) and zeros,zeros)";)
+check-lv0: $(LV0_ELF) $(LV0_IMAGE) $(addprefix $(LV0_EMBED_DIR)/,$(addsuffix .self,$(LV0_SELF_SLOTS))) $(LV0_CTR) $(LV0_VEC)
+	@$(foreach s,$(LV0_SLOTS),printf 'lv0: slot %-8s %s %7d bytes  %s\n' $(s) $(LV0_SLOT_ADDR_$(s)) $$(( $(LV0_SLOT_SIZE_$(s)) )) "$(if $(filter $(s),$(LV0_SELF_SLOTS)),$(LV0_EMBED_DIR)/$(s).self ($$(wc -c < $(LV0_EMBED_DIR)/$(s).self) bytes) and zeros$(if $(filter lv1ldr,$(s)), under decrypt_lv1ldr's AES-CTR),zeros)";)
 	@$(LV0_READELF) -h $(LV0_IMAGE) | grep -E 'Class|Data|OS/ABI|Type|Machine|Entry' > $(LV0_OUT)/header.image
 	@$(LV0_READELF) -h $(LV0_ELF) | grep -E 'Class|Data|OS/ABI|Type|Machine|Entry' > $(LV0_OUT)/header.built
 	@if cmp -s $(LV0_OUT)/header.image $(LV0_OUT)/header.built; then \
@@ -355,7 +376,7 @@ check-lv0: $(LV0_ELF) $(LV0_IMAGE) $(addprefix $(LV0_EMBED_DIR)/,$(addsuffix .se
 	@for e in $(foreach s,$(LV0_SELF_SLOTS),$(s):$(LV0_SLOT_ADDR_$(s)):$(LV0_SLOT_SIZE_$(s)):$(or $(LV0_SELF_UNMATCHED_$(s)),-):$(LV0_SELF_ELF_$(s))); do \
 		s=$${e%%:*}; e=$${e#*:}; a=$${e%%:*}; e=$${e#*:}; z=$${e%%:*}; e=$${e#*:}; u=$${e%%:*}; elf=$${e#*:}; \
 		d=$(LV0_SELF_DIR)/$$s; \
-		rm -f $$d.carried $$d.ours.elf $$d.stock.self $$d.stock.elf; \
+		rm -f $$d.carried $$d.ours.self $$d.ours.elf $$d.stock.slot $$d.stock.self $$d.stock.elf; \
 		truncate -s $$(wc -c < $$elf) $$d.carried || exit 1; \
 		phoff=$$(od -An -tu4 --endian=big -j28 -N4 $$elf); shoff=$$(od -An -tu4 --endian=big -j32 -N4 $$elf); \
 		phnum=$$(od -An -tu2 --endian=big -j44 -N2 $$elf); shnum=$$(od -An -tu2 --endian=big -j48 -N2 $$elf); \
@@ -372,7 +393,14 @@ check-lv0: $(LV0_ELF) $(LV0_IMAGE) $(addprefix $(LV0_EMBED_DIR)/,$(addsuffix .se
 			if [ $$((a)) -ge $$((va)) ] && [ $$((a + z)) -le $$((va + fsz)) ]; then fo=$$((off + a - va)); fi; \
 		done < $(LV0_OUT)/segments.image; \
 		dd if=$(LV0_IMAGE) of=$$d.stock.self bs=65536 skip=$$fo count=$$((z)) iflag=skip_bytes,count_bytes 2>/dev/null || exit 1; \
-		( $(LV0_SCETOOL) --decrypt $(abspath $(LV0_EMBED_DIR))/$$s.self $(abspath $(LV0_SELF_DIR))/$$s.ours.elf ) > $$d.ours.log; \
+		ours=$(abspath $(LV0_EMBED_DIR))/$$s.self; \
+		if [ $$s = lv1ldr ]; then \
+			mv $$d.stock.self $$d.stock.slot; \
+			$(LV0_CTR) $(LV0_VEC) $$d.stock.slot $$d.stock.self $$((z)) || exit 1; \
+			$(LV0_CTR) $(LV0_VEC) $(LV0_EMBED_DIR)/$$s.bin $$d.ours.self $$((z)) || exit 1; \
+			ours=$(abspath $(LV0_SELF_DIR))/$$s.ours.self; \
+		fi; \
+		( $(LV0_SCETOOL) --decrypt $$ours $(abspath $(LV0_SELF_DIR))/$$s.ours.elf ) > $$d.ours.log; \
 		( $(LV0_SCETOOL) --decrypt $(abspath $(LV0_SELF_DIR))/$$s.stock.self $(abspath $(LV0_SELF_DIR))/$$s.stock.elf ) > $$d.stock.log; \
 		for w in ours stock; do \
 			if [ ! -s $$d.$$w.elf ]; then cat $$d.$$w.log; echo "lv0: slot $$s: scetool could not decrypt $$d.$$w.self"; exit 1; fi; \

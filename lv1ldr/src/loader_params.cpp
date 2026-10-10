@@ -8,7 +8,7 @@ int bytes_differ(const unsigned char *a, const unsigned char *b, int n);
 
 extern const vec_uchar16 params_seed;
 extern const unsigned char params_pub[40];
-extern const unsigned char params_curve[120];
+extern const unsigned char params_curve[121];
 
 void param_block::init()
 {
