@@ -1,0 +1,4 @@
+00000fb0 _ZTV11dma_channel
+00001020 g_heap
+00001030 g_atexit_count
+00001040 g_atexit_handlers

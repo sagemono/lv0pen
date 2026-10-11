@@ -31,7 +31,7 @@ SPU_GCC341_BIN := /path/to/spu/bin
 | Target | |
 |---|---|
 | `make` | build everything into `build/` |
-| `make lv0`, `make lv0ldr`, `make metldr`, `make isoldr`, `make lv1ldr`, `make lv2ldr`, `make appldr`, `make spp_verifier`, `make spu_token_processor`, `make spu_utoken_processor`, `make spu_pkg_rvk_verifier`, `make aim_spu_module` | build one |
+| `make lv0`, `make lv0ldr`, `make metldr`, `make isoldr`, `make lv1ldr`, `make lv2ldr`, `make appldr`, `make spp_verifier`, `make spu_token_processor`, `make spu_utoken_processor`, `make spu_pkg_rvk_verifier`, `make aim_spu_module`, `make manu_info_spu_module` | build one |
 | `make check` | compare the builds with your images |
 | `make clean` | remove `build/` |
 
@@ -50,11 +50,12 @@ lv0 embeds lv1ldr, lv2ldr, isoldr and appldr as SELFs. The build encrypts its ow
 - `lv2ldr/image/lv2ldr.elf`
 - `appldr/image/appldr.elf`
 - `lv1ldr/image/lv1ldr.elf`
-- `spp_verifier/image/spp_verifier.elf`, 
-- `spu_token_processor/image/spu_token_processor.elf`, 
-- `spu_utoken_processor/image/spu_utoken_processor.elf`, 
-- `spu_pkg_rvk_verifier/image/spu_pkg_rvk_verifier.elf`, 
+- `spp_verifier/image/spp_verifier.elf`
+- `spu_token_processor/image/spu_token_processor.elf`
+- `spu_utoken_processor/image/spu_utoken_processor.elf`
+- `spu_pkg_rvk_verifier/image/spu_pkg_rvk_verifier.elf`
 - `aim_spu_module/image/aim_spu_module.elf`
+- `manu_info_spu_module/image/manu_info_spu_module.elf`
 
 lv0 is compared byte for byte outside its module slots; each slot is checked
 by decrypting both the built and the original SELF.

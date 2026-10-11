@@ -13,10 +13,19 @@ struct key128 {
     u64 lo;
 };
 
+#define ID_DEVICE_TYPE  1
+#define ID_DEVICE_ID    2
+#define ID_PS_CODE      3
+#define ID_OPEN_PS_ID   4
+
 class eid0_reader {
 public:
     eid0_reader(dma_channel *dma, key128 arg, key128 iv, key128 key_hi, key128 key_lo);
     ~eid0_reader();
+    unsigned int read_id_type(const quad_u64 &ea, const quad_uint &size, const quad_uint &ls,
+                              const quad_uint &unused);
+    unsigned int put_id(const quad_u64 &ea, const quad_uint &size, const quad_uint &ls,
+                        const quad_uint &unused, const quad_ptr &buf, const quad_uint &buf_size);
     unsigned int read(const quad_u64 &ea, const quad_uint &size, const quad_uint &ls,
                       const quad_uint &unused, const quad_ptr &buf, const quad_uint &buf_size);
 

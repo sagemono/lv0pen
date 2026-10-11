@@ -159,7 +159,7 @@ check-spu_token_processor: $(SPU_TOKEN_PROCESSOR_BIN) $(SPU_TOKEN_PROCESSOR_IMAG
 	if [ ! -s $(SPU_TOKEN_PROCESSOR_OUT)/differing.built ]; then \
 		echo "spu_token_processor: $(SPU_TOKEN_PROCESSOR_LOAD_START)-$(SPU_TOKEN_PROCESSOR_LOAD_END) identical to $(SPU_TOKEN_PROCESSOR_IMAGE)"; \
 	elif cmp -s $(SPU_TOKEN_PROCESSOR_OUT)/differing.built $(SPU_TOKEN_PROCESSOR_UNMATCHED); then \
-		echo "spu_token_processor: $(SPU_TOKEN_PROCESSOR_LOAD_START)-$(SPU_TOKEN_PROCESSOR_LOAD_END) identical to $(SPU_TOKEN_PROCESSOR_IMAGE) but for the $$(wc -l < $(SPU_TOKEN_PROCESSOR_UNMATCHED)) bytes of the two functions that do not match yet (eid0_reader::read, memcpy) ($(SPU_TOKEN_PROCESSOR_UNMATCHED))"; \
+		echo "spu_token_processor: $(SPU_TOKEN_PROCESSOR_LOAD_START)-$(SPU_TOKEN_PROCESSOR_LOAD_END) identical to $(SPU_TOKEN_PROCESSOR_IMAGE) but for the $$(wc -l < $(SPU_TOKEN_PROCESSOR_UNMATCHED)) bytes of memcpy, the function that does not match yet ($(SPU_TOKEN_PROCESSOR_UNMATCHED))"; \
 	else \
 		echo "spu_token_processor: $(SPU_TOKEN_PROCESSOR_LOAD_START)-$(SPU_TOKEN_PROCESSOR_LOAD_END) DIFFERS from $(SPU_TOKEN_PROCESSOR_IMAGE) (offset from $(SPU_TOKEN_PROCESSOR_LOAD_START) + 1, image byte, built byte):"; \
 		diff $(SPU_TOKEN_PROCESSOR_UNMATCHED) $(SPU_TOKEN_PROCESSOR_OUT)/differing.built | grep '^[<>]' | head -20; \

@@ -7,11 +7,6 @@
 
 #define AIM_DMA_SIZE    0x80
 
-#define AIM_DEVICE_TYPE 1
-#define AIM_DEVICE_ID   2
-#define AIM_PS_CODE     3
-#define AIM_OPEN_PS_ID  4
-
 class dma_log {
 public:
     dma_log();
@@ -30,10 +25,5 @@ public:
 };
 
 dma_log *get_log();
-
-unsigned int read_id_type(eid0_reader *eid, const quad_u64 &ea, const quad_uint &size,
-                          const quad_uint &ls, const quad_uint &unused);
-unsigned int put_id(eid0_reader *eid, const quad_u64 &ea, const quad_uint &size, const quad_uint &ls,
-                    const quad_uint &unused, const quad_ptr &buf, const quad_uint &buf_size);
 
 #endif

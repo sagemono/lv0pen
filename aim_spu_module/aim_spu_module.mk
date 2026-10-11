@@ -12,7 +12,7 @@ AIM_SPU_MODULE_IMAGE_BIN := $(AIM_SPU_MODULE_OUT)/image.bin
 AIM_SPU_MODULE_LOAD_START := 0x880
 AIM_SPU_MODULE_LOAD_END := 0x3DC0
 
-AIM_SPU_MODULE_UNITS := 	aim_spu_module/src/salt.S 	spu_token_processor/src/crt0.S 	aim_spu_module/src/main.cpp 	lv2ldr/src/hash_reader.cpp 	spu_token_processor/src/eid0_reader.cpp 	aim_spu_module/src/aim_reader.cpp 	aim_spu_module/src/dma_log.cpp 	lv0ldr/crypto/aes_set_encrypt_key.c 	lv0ldr/crypto/aes_encrypt_block.c 	lv0ldr/crypto/aes_cbc_decrypt.c 	isoldr/crypto/aes_cmac.c 	lv0ldr/crypto/aes_set_decrypt_key.c 	lv0ldr/crypto/aes_decrypt_block.c 	lv0ldr/crypto/aes_decrypt8.c 	spp_verifier/src/runtime/dma_channel.cpp 	spp_verifier/src/runtime/delete.cpp 	spp_verifier/src/runtime/exit.c 	spp_verifier/src/runtime/free.c 	spp_verifier/src/runtime/heap.c 	spp_verifier/src/runtime/memcpy.c 	spp_verifier/src/runtime/memset.c 	aim_spu_module/src/runtime/strlen.c 	spp_verifier/src/runtime/atexit.c 	lv0ldr/src/util/shuffle_table.c
+AIM_SPU_MODULE_UNITS := 	aim_spu_module/src/salt.S 	spu_token_processor/src/crt0.S 	aim_spu_module/src/main.cpp 	lv2ldr/src/hash_reader.cpp 	spu_token_processor/src/eid0_reader.cpp 	aim_spu_module/src/dma_log.cpp 	lv0ldr/crypto/aes_set_encrypt_key.c 	lv0ldr/crypto/aes_encrypt_block.c 	lv0ldr/crypto/aes_cbc_decrypt.c 	isoldr/crypto/aes_cmac.c 	lv0ldr/crypto/aes_set_decrypt_key.c 	lv0ldr/crypto/aes_decrypt_block.c 	lv0ldr/crypto/aes_decrypt8.c 	spp_verifier/src/runtime/dma_channel.cpp 	spp_verifier/src/runtime/delete.cpp 	spp_verifier/src/runtime/exit.c 	spp_verifier/src/runtime/free.c 	spp_verifier/src/runtime/heap.c 	spp_verifier/src/runtime/memcpy.c 	spp_verifier/src/runtime/memset.c 	spp_verifier/src/runtime/strlen.c 	spp_verifier/src/runtime/atexit.c 	lv0ldr/src/util/shuffle_table.c
 
 AIM_SPU_MODULE_OBJS := $(addprefix $(AIM_SPU_MODULE_OBJ_DIR)/,$(addsuffix .o,$(basename $(AIM_SPU_MODULE_UNITS))))
 
@@ -39,7 +39,7 @@ $(AIM_SPU_MODULE_OBJ_DIR)/spp_verifier/src/runtime/free.o: UNIT_FLAGS := -O2
 $(AIM_SPU_MODULE_OBJ_DIR)/spp_verifier/src/runtime/memcpy.o: UNIT_FLAGS := -O2
 $(AIM_SPU_MODULE_OBJ_DIR)/spp_verifier/src/runtime/memset.o: UNIT_FLAGS := -O2
 $(AIM_SPU_MODULE_OBJ_DIR)/spp_verifier/src/runtime/atexit.o: UNIT_FLAGS := -O2
-$(AIM_SPU_MODULE_OBJ_DIR)/aim_spu_module/src/runtime/strlen.o: UNIT_FLAGS := -O2
+$(AIM_SPU_MODULE_OBJ_DIR)/spp_verifier/src/runtime/strlen.o: UNIT_FLAGS := -O2
 
 .PHONY: aim_spu_module check-aim_spu_module clean-aim_spu_module
 
@@ -115,7 +115,7 @@ check-aim_spu_module: $(AIM_SPU_MODULE_BIN) $(AIM_SPU_MODULE_IMAGE_BIN) $(AIM_SP
 	if [ ! -s $(AIM_SPU_MODULE_OUT)/differing.built ]; then \
 		echo "aim_spu_module: $(AIM_SPU_MODULE_LOAD_START)-$(AIM_SPU_MODULE_LOAD_END) identical to $(AIM_SPU_MODULE_IMAGE)"; \
 	elif cmp -s $(AIM_SPU_MODULE_OUT)/differing.built $(AIM_SPU_MODULE_UNMATCHED); then \
-		echo "aim_spu_module: $(AIM_SPU_MODULE_LOAD_START)-$(AIM_SPU_MODULE_LOAD_END) identical to $(AIM_SPU_MODULE_IMAGE) but for the $$(wc -l < $(AIM_SPU_MODULE_UNMATCHED)) bytes of the two functions that do not match yet (eid0_reader::read, memcpy) ($(AIM_SPU_MODULE_UNMATCHED))"; \
+		echo "aim_spu_module: $(AIM_SPU_MODULE_LOAD_START)-$(AIM_SPU_MODULE_LOAD_END) identical to $(AIM_SPU_MODULE_IMAGE) but for the $$(wc -l < $(AIM_SPU_MODULE_UNMATCHED)) bytes of memcpy, the function that does not match yet ($(AIM_SPU_MODULE_UNMATCHED))"; \
 	else \
 		echo "aim_spu_module: $(AIM_SPU_MODULE_LOAD_START)-$(AIM_SPU_MODULE_LOAD_END) DIFFERS from $(AIM_SPU_MODULE_IMAGE) (offset from $(AIM_SPU_MODULE_LOAD_START) + 1, image byte, built byte):"; \
 		diff $(AIM_SPU_MODULE_UNMATCHED) $(AIM_SPU_MODULE_OUT)/differing.built | grep '^[<>]' | head -20; \

@@ -12,10 +12,11 @@ Source for the PlayStation 3 boot chain and its isolated SPU modules, rebuilt wi
 | `lv2ldr` | lv2ldr 4.93 | 258 / 259 |
 | `appldr` | appldr 4.93 | 446 / 446 |
 | `spp_verifier` | spp_verifier 4.93 | 139 / 141 |
-| `spu_token_processor` | spu_token_processor 4.93 | 104 / 106 |
-| `spu_utoken_processor` | spu_utoken_processor 4.93 | 72 / 75 |
+| `spu_token_processor` | spu_token_processor 4.93 | 105 / 106 |
+| `spu_utoken_processor` | spu_utoken_processor 4.93 | 73 / 75 |
 | `spu_pkg_rvk_verifier` | spu_pkg_rvk_verifier 4.93 | 165 / 171 |
-| `aim_spu_module` | aim_spu_module 4.93 | 39 / 41 |
+| `aim_spu_module` | aim_spu_module 4.93 | 40 / 41 |
+| `manu_info_spu_module` | manu_info_spu_module 4.93 | 16 / 16 |
 
 No firmware is included. See [BUILDING.md](BUILDING.md) to build.
 

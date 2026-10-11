@@ -71,7 +71,7 @@ int main(u64 dma_ea, u64 dma_size, u64 eid0_ea, u64 eid0_size, key128 arg4, key1
     } else {
         eid0_reader eid(&dma, arg4, eid_iv, eid_key_hi, eid_key_lo);
 
-        r = read_id_type(&eid, ea, size, ls, unused);
+        r = eid.read_id_type(ea, size, ls, unused);
         if (r) {
             stop_on_error(r);
             return -1;
@@ -81,7 +81,7 @@ int main(u64 dma_ea, u64 dma_size, u64 eid0_ea, u64 eid0_size, key128 arg4, key1
             stop_on_error(r);
             return -1;
         }
-        r = put_id(&eid, ea, size, ls, unused, buf, buf_size);
+        r = eid.put_id(ea, size, ls, unused, buf, buf_size);
         if (r) {
             stop_on_error(r);
             return -1;

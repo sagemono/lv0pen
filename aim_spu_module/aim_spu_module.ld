@@ -25,9 +25,9 @@ SECTIONS
     */spu_token_processor/src/eid0_reader.o(.text._ZN11eid0_readerC1EP11dma_channel6key128S2_S2_S2_)
     */spu_token_processor/src/eid0_reader.o(.text._ZN11eid0_readerC2EP11dma_channel6key128S2_S2_S2_)
     . = . < 0x5b8 ? 0x5b8 : .;
-    */aim_spu_module/src/aim_reader.o(.text.*read_id_type*)
+    */spu_token_processor/src/eid0_reader.o(.text._ZN11eid0_reader12read_id_typeERKyRKjS3_S3_)
     . = . < 0x678 ? 0x678 : .;
-    */aim_spu_module/src/aim_reader.o(.text.*put_id*)
+    */spu_token_processor/src/eid0_reader.o(.text._ZN11eid0_reader6put_idERKyRKjS3_S3_RKPhS3_)
     . = . < 0x878 ? 0x878 : .;
     */spu_token_processor/src/eid0_reader.o(.text._ZN11eid0_reader4readERKyRKjS3_S3_RKPhS3_)
     . = . < 0xa38 ? 0xa38 : .;
@@ -88,7 +88,7 @@ SECTIONS
     . = . < 0x2b10 ? 0x2b10 : .;
     */spp_verifier/src/runtime/memset.o(.text.memset)
     . = . < 0x2c00 ? 0x2c00 : .;
-    */aim_spu_module/src/runtime/strlen.o(.text.strlen)
+    */spp_verifier/src/runtime/strlen.o(.text.strlen)
     . = . < 0x2c78 ? 0x2c78 : .;
     */spp_verifier/src/runtime/atexit.o(.text.run_atexit)
     *(.text .text.* .gnu.linkonce.t.*)
