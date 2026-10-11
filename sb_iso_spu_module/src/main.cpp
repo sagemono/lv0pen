@@ -9,8 +9,6 @@ static const quad_uint s_ok = STOP_OK;
 unsigned char g_key_a[32] __attribute__((aligned(16)));
 unsigned char g_key_b[32] __attribute__((aligned(16)));
 unsigned char g_type_key[16] __attribute__((aligned(16)));
-extern unsigned char g_key_15[16], g_key_16[16], g_key_17[16];
-extern const unsigned char g_type_enc_key4[16], g_type_enc_key5[16], g_type_iv[16];
 
 int sb_module::serve(ss_iso_dma_data *t)
 {

@@ -25,6 +25,9 @@ extern const unsigned char g_b_enc_key1[32], g_b_dec_key1[32], g_a_key1[32];
 extern const unsigned char g_b_enc_key2[32], g_b_dec_key2[32], g_a_key2[32];
 extern const unsigned char g_b_enc_key3[32], g_b_dec_key3[32], g_a_key3[32];
 
+extern const unsigned char g_type_enc_key4[16], g_type_enc_key5[16], g_type_iv[16];
+extern unsigned char g_key_15[16], g_key_16[16], g_key_17[16];
+
 class session_b {
 public:
     unsigned int xor_bytes(const unsigned char *a, const unsigned char *b, unsigned char *out,

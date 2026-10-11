@@ -20,7 +20,7 @@ Source for the PlayStation 3 boot chain and its isolated SPU modules, rebuilt wi
 | `sc_iso` | sc_iso 4.93 | 306 / 335 |
 | `sb_iso_spu_module` | sb_iso_spu_module 4.93 | 52 / 60 |
 
-No firmware is included. See [BUILDING.md](BUILDING.md) to build. `sc_iso` and `sb_iso_spu_module` are source only for now; they have no make target yet.
+No firmware is included. See [BUILDING.md](BUILDING.md) to build.
 
 ## License
 

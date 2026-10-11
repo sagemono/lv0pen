@@ -8,7 +8,7 @@ Needs GNU make, the compilers that built each part, and scetool for lv0.
 | `SPU_GCC341_BIN` | SPU GCC 3.4.1 (CELL 2.2.1) | the crypto library |
 | `SPU_GCC411_SDK420_BIN` | SPU GCC 4.1.1 (SDK420) | `isoldr`, `lv1ldr`, `lv2ldr`, `appldr`, the SPU modules |
 | `PPU_GCC411_SDK420_BIN` | PPU GCC 4.1.1 (SDK420) | `lv0` |
-| `SPU_GCC411_BETA_BIN` | SPU GCC 4.1.1 (CELL 4.1.2.6 Beta) | `lv1ldr/encdec` |
+| `SPU_GCC411_BETA_BIN` | SPU GCC 4.1.1 (CELL 4.1.2.6 Beta) | `lv1ldr/encdec`, `sc_iso`'s secure-communication library |
 | `SCETOOL` | scetool, with its keys in its own `data/` | the loaders lv0 embeds |
 | `HOST_CC` | a C compiler for the build machine (default `cc`) | the tool that encrypts lv1ldr for lv0 |
 
@@ -31,7 +31,7 @@ SPU_GCC341_BIN := /path/to/spu/bin
 | Target | |
 |---|---|
 | `make` | build everything into `build/` |
-| `make lv0`, `make lv0ldr`, `make metldr`, `make isoldr`, `make lv1ldr`, `make lv2ldr`, `make appldr`, `make spp_verifier`, `make spu_token_processor`, `make spu_utoken_processor`, `make spu_pkg_rvk_verifier`, `make aim_spu_module`, `make manu_info_spu_module` | build one |
+| `make lv0`, `make lv0ldr`, `make metldr`, `make isoldr`, `make lv1ldr`, `make lv2ldr`, `make appldr`, `make spp_verifier`, `make spu_token_processor`, `make spu_utoken_processor`, `make spu_pkg_rvk_verifier`, `make aim_spu_module`, `make manu_info_spu_module`, `make sb_iso_spu_module`, `make sc_iso` | build one |
 | `make check` | compare the builds with your images |
 | `make clean` | remove `build/` |
 
@@ -56,6 +56,8 @@ lv0 embeds lv1ldr, lv2ldr, isoldr and appldr as SELFs. The build encrypts its ow
 - `spu_pkg_rvk_verifier/image/spu_pkg_rvk_verifier.elf`
 - `aim_spu_module/image/aim_spu_module.elf`
 - `manu_info_spu_module/image/manu_info_spu_module.elf`
+- `sb_iso_spu_module/image/sb_iso_spu_module.elf`
+- `sc_iso/image/sc_iso.elf`
 
 lv0 is compared byte for byte outside its module slots; each slot is checked
 by decrypting both the built and the original SELF.

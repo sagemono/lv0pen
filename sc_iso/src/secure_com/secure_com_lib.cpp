@@ -3,8 +3,8 @@
 #include "aes.h"
 #include "util.h"
 
-extern "C" void prng_seed(void);
-extern "C" int prng_random(unsigned char *out);
+void prng_seed(void);
+int prng_random(unsigned char *out);
 
 #define BE32(p) ((((p)[1] << 16) | ((p)[0] << 24)) | ((p)[2] << 8) | (p)[3])
 

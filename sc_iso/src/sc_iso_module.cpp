@@ -22,13 +22,35 @@ static const unsigned char s_service = 0x1F;
 
 static const unsigned int s_ready = 0x80;
 
-extern u8 g_116352[16], g_116368[16], g_116384[16], g_116400[16], g_116416[16], g_116432[16];
+u8 g_116352[16] __attribute__((aligned(16))) = {
+    0x13, 0x16, 0x3A, 0x92, 0xB5, 0x05, 0x13, 0x54,
+    0x2C, 0x18, 0xAB, 0xAD, 0x31, 0xB8, 0x5F, 0xB7
+};
 
-extern u8 g_116752[16], g_116768[16], g_116784[16], g_116800[16], g_116816[16], g_116832[16];
+u8 g_116368[16] __attribute__((aligned(16))) = {
+    0x2B, 0xC8, 0xBB, 0x73, 0xF4, 0xB5, 0x9A, 0xC6,
+    0x58, 0xA7, 0x37, 0xA5, 0xDD, 0x53, 0x5D, 0xFE
+};
 
-extern const u8 op32_key[16];
+u8 g_116384[16] __attribute__((aligned(16))) = {
+    0xD6, 0xC3, 0x74, 0xFC, 0xDF, 0xF8, 0xC3, 0xCF,
+    0x44, 0x01, 0x8C, 0x78, 0x73, 0x3B, 0xF5, 0xB2
+};
 
-extern const u8 op32_iv[16];
+u8 g_116400[16] __attribute__((aligned(16))) = {
+    0x64, 0x8B, 0x9F, 0xF9, 0x4E, 0xF3, 0x21, 0xC6,
+    0x9A, 0x4A, 0xE5, 0x96, 0xF2, 0xF0, 0x8D, 0x22
+};
+
+u8 g_116416[16] __attribute__((aligned(16))) = {
+    0x62, 0x6C, 0x71, 0x24, 0xFC, 0x5B, 0xA1, 0xAF,
+    0x74, 0x36, 0x38, 0x9B, 0xA3, 0x7C, 0x66, 0x54
+};
+
+u8 g_116432[16] __attribute__((aligned(16))) = {
+    0x9D, 0x94, 0xBE, 0x46, 0x1C, 0xAF, 0x08, 0x3C,
+    0x9D, 0x9F, 0xA1, 0x85, 0xC9, 0x3A, 0xEE, 0x7B
+};
 
 #define GSS_LOG(what) \
     do { \
@@ -36,12 +58,44 @@ extern const u8 op32_iv[16];
         get_log()->puts(what); \
     } while (0)
 
-extern u8 g_116752[16], g_116768[16], g_116784[16], g_116800[16], g_116816[16], g_116832[16];
+u8 g_116752[16] __attribute__((aligned(16))), g_116768[16] __attribute__((aligned(16))),
+    g_116784[16] __attribute__((aligned(16))), g_116800[16] __attribute__((aligned(16))),
+    g_116816[16] __attribute__((aligned(16))), g_116832[16] __attribute__((aligned(16)));
 
-extern const u8 g_116144[16], g_116160[16], g_116176[16], g_116192[16], g_116208[16],
-    g_116224[16];
+u8 g_116144[16] __attribute__((aligned(16))) = {
+    0x63, 0xDC, 0xA7, 0xD3, 0xFE, 0xE4, 0x7F, 0x74,
+    0x9A, 0x40, 0x83, 0x63, 0xF1, 0x10, 0x4E, 0x8F
+};
 
-extern const u8 g_state_116448[16];
+u8 g_116160[16] __attribute__((aligned(16))) = {
+    0x4D, 0x10, 0x09, 0x43, 0x24, 0x00, 0x9C, 0xC8,
+    0xE6, 0xB6, 0x9C, 0x70, 0x32, 0x8E, 0x34, 0xC5
+};
+
+u8 g_116176[16] __attribute__((aligned(16))) = {
+    0xD9, 0x79, 0x49, 0xBA, 0xD8, 0xDA, 0x69, 0xD0,
+    0xE0, 0x1B, 0xF3, 0x15, 0x23, 0x73, 0x28, 0x32
+};
+
+u8 g_116192[16] __attribute__((aligned(16))) = {
+    0xC9, 0xD1, 0xDD, 0x3C, 0xE2, 0x7E, 0x35, 0x66,
+    0x97, 0xE2, 0x6C, 0x12, 0xA7, 0xB3, 0x16, 0xA8
+};
+
+u8 g_116208[16] __attribute__((aligned(16))) = {
+    0x44, 0x20, 0xED, 0x72, 0x2F, 0xEA, 0x35, 0x02,
+    0x19, 0x55, 0xAB, 0x40, 0xC7, 0x8E, 0xE6, 0xDF
+};
+
+u8 g_116224[16] __attribute__((aligned(16))) = {
+    0x3E, 0x67, 0xC2, 0xD9, 0x43, 0x2E, 0x15, 0xD0,
+    0x9B, 0xEF, 0x0E, 0x6C, 0x64, 0x92, 0x45, 0x5D
+};
+
+u8 g_state_116448[16] __attribute__((aligned(16))) = {
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01
+};
 
 static const u64 g_mode_ff = 0xFF;
 
@@ -136,10 +190,6 @@ static const u64 s_id_6 = 6;
 static const quad_uint s_16 = 16;
 
 static const u64 s_id_1 = 1;
-
-static const u8 s_keyseed[16] = {
-    'k', 'e', 'y', 's', 'e', 'e', 'd', '_', 'f', 'o', 'r', '_', 's', 'r', 'k', '2'
-};
 
 struct sc_blob96 {
     u64 version;
@@ -492,7 +542,7 @@ unsigned int sc_iso_module::cmd_init_srk(const quad_ptr &buf, const quad_uint &l
 
 unsigned int sc_iso_module::derive_srk2_key(const quad_ptr &buf, const quad_uint &len)
 {
-    return encrypt_seed(buf, len, s_keyseed);
+    return encrypt_seed(buf, len, seed_5);
 }
 
 unsigned int sc_iso_module::cmd_backup_root_info(const quad_ptr &buf, const quad_uint &len, const quad_ptr &out,
@@ -736,7 +786,6 @@ unsigned int sc_iso_module::cmd_set_sc_status(const quad_ptr &in, const quad_uin
 
 unsigned int sc_iso_module::write_mngblk(void *data)
 {
-    static const quad_uint s_0 = 0;
     unsigned int ret;
     quad_ptr p;
     quad_uint len;
@@ -746,7 +795,7 @@ unsigned int sc_iso_module::write_mngblk(void *data)
     got = 0;
     p = (u8 *)data;
 
-    ret = write_data(p, s_0, len, got);
+    ret = write_data(p, mngblk_zero, len, got);
     if (ret == 0)
         ret = got != len ? 15 : 0;
     return ret;
@@ -817,7 +866,6 @@ unsigned int sc_iso_module::cmd_set_srh(const quad_ptr &in, const quad_uint &in_
 
 unsigned int sc_iso_module::write_srh(const quad_ptr &buf, const quad_uint &len)
 {
-    static const quad_uint s_32 = 32;
     unsigned int ret;
     quad_ptr p;
     quad_uint n;
@@ -831,7 +879,7 @@ unsigned int sc_iso_module::write_srh(const quad_ptr &buf, const quad_uint &len)
     memset(data, 0, sizeof(data));
     memcpy(data, buf, len);
     got = 0;
-    ret = write_data(p, s_32, n, got);
+    ret = write_data(p, mngblk_offset, n, got);
     if (ret != 0)
         return ret;
     if (got != n)
@@ -2617,8 +2665,8 @@ unsigned int sc_iso_module::pmode_make_challenge(const op32_msg *in, op32_msg *o
     memcpy(enc, resp.data, 48);
     int (*encrypt)(vec_uchar16 *, const vec_uchar16 *, int, const unsigned char *, int,
                    const vec_uchar16 *) = aes_cbc_encrypt;
-    ret = encrypt((vec_uchar16 *)enc, (const vec_uchar16 *)enc, 48, op32_key, 128,
-                  (const vec_uchar16 *)op32_iv);
+    ret = encrypt((vec_uchar16 *)enc, (const vec_uchar16 *)enc, 48, g_op33_key, 128,
+                  (const vec_uchar16 *)g_op33_iv);
     if (ret != 0) {
         SC_ERR_RET(err, 0x8B, ret);
         r = 15;
