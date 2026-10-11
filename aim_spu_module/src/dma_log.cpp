@@ -82,6 +82,19 @@ void dma_log::init(const quad_u64 &ea, const quad_uint &size)
     set_buffer(buf_ea, buf_size);
 }
 
+u64 dma_log::top_power(u64 v)
+{
+    u64 d = 1;
+    int i;
+
+    for (i = 0; i < 19; i++) {
+        if (v <= d)
+            return d > 9 ? d / 10 : d;
+        d *= 10;
+    }
+    return d;
+}
+
 void dma_log::put_digit(unsigned int d)
 {
     switch (d) {
@@ -105,16 +118,104 @@ void dma_log::put_digit(unsigned int d)
     }
 }
 
-void dma_log::put_hex(s64 v)
+int dma_log::put_number(const void *p, int size, unsigned int base, int neg)
 {
-    int i;
+    const unsigned char *b = (const unsigned char *)p;
+    int n;
 
-    if (v < 0) {
+    if (base != 10 && base != 16)
+        return -1;
+    n = 0;
+    if (neg) {
         puts("-");
-        v = -v;
+        n = 1;
     }
-    puts("0");
-    puts("x");
-    for (i = 60; i >= 0; i -= 4)
-        put_digit((v >> i) & 15);
+    if (base == 16) {
+        int lead = 1;
+        int i;
+
+        puts("0");
+        puts("x");
+        for (i = 0; i < size; i++) {
+            unsigned int c = b[i];
+            unsigned int hi = c >> 4;
+            unsigned int lo = c & 15;
+
+            if (!lead || hi != 0) {
+                put_digit(hi);
+                put_digit(lo);
+                lead = 0;
+            } else if (!lead || lo != 0 || i == size - 1) {
+                put_digit(lo);
+                lead = 0;
+            }
+        }
+        n += i;
+        n += 2;
+    } else if (base == 10) {
+        u64 v, d;
+
+        switch (size) {
+        case 1:
+            v = *(const u8 *)p;
+            break;
+        case 2:
+            v = *(const u16 *)p;
+            break;
+        case 4:
+            v = *(const u32 *)p;
+            break;
+        case 8:
+            v = *(const u64 *)p;
+            break;
+        default:
+            v = 0;
+            break;
+        }
+        for (d = top_power(v); d != 0; d /= 10) {
+            n++;
+            put_digit(v / d);
+            v %= d;
+        }
+    }
+    return n;
+}
+
+int dma_log::put(s64 v, unsigned int base)
+{
+    bool neg = false;
+
+    if (base == 10 && v < 0) {
+        v = -v;
+        neg = true;
+    }
+    return put_number(&v, 8, base, neg);
+}
+
+int dma_log::put(u64 v, unsigned int base)
+{
+    return put_number(&v, 8, base, false);
+}
+
+int dma_log::put(unsigned int v, unsigned int base)
+{
+    return put_number(&v, 4, base, false);
+}
+
+int dma_log::put(int v, unsigned int base)
+{
+    bool neg = false;
+
+    if (base == 10) {
+        if (v < 0) {
+            v = -v;
+            neg = true;
+        }
+    }
+    return put_number(&v, 4, base, neg);
+}
+
+int dma_log::put(u8 v, unsigned int base)
+{
+    return put_number(&v, 1, base, false);
 }

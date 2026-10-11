@@ -8,6 +8,24 @@ dma_channel::dma_channel()
 {
 }
 
+unsigned int dma_channel::in_mbox_count(unsigned int &n)
+{
+    unsigned int c;
+
+    RCHCNT(29, c);
+    n = c;
+    return 0;
+}
+
+unsigned int dma_channel::out_intr_mbox_room(unsigned int &n)
+{
+    unsigned int c;
+
+    RCHCNT(30, c);
+    n = c;
+    return 0;
+}
+
 unsigned int dma_channel::issue(unsigned int ls, u64 ea, unsigned int size, unsigned int tag,
                                 unsigned int rid, unsigned int cmd)
 {
