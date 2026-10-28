@@ -7,6 +7,7 @@ Source for the PlayStation 3 boot chain and its isolated SPU modules, rebuilt wi
 | `lv0` | lv0 4.93 | 100% |
 | `lv0ldr` | bootldr 1.0.0 | 458 / 458 |
 | `metldr` | metldr | 182 / 182 |
+| `metldr2` | metldr.2 3.6.5 | 208 / 208 |
 | `isoldr` | isoldr 4.93 | 273 / 273 |
 | `lv1ldr` | lv1ldr 4.93 | 293 / 300 |
 | `lv2ldr` | lv2ldr 4.93 | 258 / 259 |
@@ -20,7 +21,7 @@ Source for the PlayStation 3 boot chain and its isolated SPU modules, rebuilt wi
 | `sc_iso` | sc_iso 4.93 | 306 / 335 |
 | `sb_iso_spu_module` | sb_iso_spu_module 4.93 | 52 / 60 |
 
-No firmware is included. See [BUILDING.md](BUILDING.md) to build.
+No firmware is included. See [BUILDING.md](BUILDING.md) to build (`metldr2` has no make build yet).
 
 ## License
 

@@ -35,6 +35,8 @@ SPU_GCC341_BIN := /path/to/spu/bin
 | `make check` | compare the builds with your images |
 | `make clean` | remove `build/` |
 
+`metldr2` (metldr.2, the metldr of firmware 3.60 and later) is source only for now: it has no make target yet. It builds with SPU GCC 4.1.1 (SDK420) and shares units with `isoldr`, `lv0ldr` (its crypto library, with SPU GCC 3.4.1), `lv1ldr` and `lv2ldr`.
+
 ## lv0's modules
 
 lv0 embeds lv1ldr, lv2ldr, isoldr and appldr as SELFs. The build encrypts its own builds of them with scetool, so their bytes differ from the original's (the keys and signature are new each time). lv1ldr's SELF is then encrypted once more with lv0's own AES-CTR, by a small host tool built from lv0's `aes.c` (`lv0/host/lv1ldr_ctr.c`). The four second headers stay zero for now.
