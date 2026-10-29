@@ -6,8 +6,10 @@ entry:
 	ila	$14,_start
 	bi	$14
 	.size	entry, .-entry
-
 	.align	4,0
+
+	.section .text.leave,"ax",@progbits
+	.align	4
 	.global	leave
 	.type	leave, @function
 leave:
