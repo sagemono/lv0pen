@@ -22,7 +22,7 @@ int main(u64 dma_ea, u64 dma_size, u64 area, u64 word, key128 arg4, key128 key2,
     quad_uint no_len;
     quad_uint log_size;
     quad_uint reply_len;
-    quad_ptr ls;
+    quad_uint ls;
     quad_uint msg_size;
     quad_ptr reply;
     quad_uint id;
@@ -47,7 +47,7 @@ int main(u64 dma_ea, u64 dma_size, u64 area, u64 word, key128 arg4, key128 key2,
     data_size = sizeof(buf);
     msg = (unsigned char *)0x3E000;
     msg_size = 0x1800;
-    ls = (unsigned char *)0x3FFF0;
+    ls = 0x3FFF0;
     hdr_size = 16;
     if (dma_ea == 0 || dma_size < 0x230) {
         err |= 0x80;

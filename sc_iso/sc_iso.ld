@@ -316,8 +316,8 @@ SECTIONS
     */sc_iso/src/ss_iso_dma_data.o(.text._ZN15ss_iso_dma_dataD1Ev)
     */sc_iso/src/ss_iso_dma_data.o(.text._ZN15ss_iso_dma_dataD2Ev)
     . = . < 0xb070 ? 0xb070 : .;
-    */sc_iso/src/ss_iso_dma_data.o(.text._ZN15ss_iso_dma_dataC1ERKyRKjRKPhS3_)
-    */sc_iso/src/ss_iso_dma_data.o(.text._ZN15ss_iso_dma_dataC2ERKyRKjRKPhS3_)
+    */sc_iso/src/ss_iso_dma_data.o(.text._ZN15ss_iso_dma_dataC1ERKyRKjS3_S3_)
+    */sc_iso/src/ss_iso_dma_data.o(.text._ZN15ss_iso_dma_dataC2ERKyRKjS3_S3_)
     . = . < 0xb110 ? 0xb110 : .;
     */sc_iso/src/ss_iso_dma_data.o(.text._ZN15ss_iso_dma_data3getERKPhRKjRjS5_S5_)
     . = . < 0xb628 ? 0xb628 : .;

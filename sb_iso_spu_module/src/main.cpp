@@ -88,7 +88,7 @@ int sb_module::serve(ss_iso_dma_data *t)
 int main(u64 ea, u64 size, u64 arg2, u64 arg3, key128 a0, key128 a1, key128 a2, key128 a3,
          key128 b0, key128 b1, key128 b2, key128 b3)
 {
-    quad_ptr ls = (unsigned char *)0x3FFF0;
+    quad_uint ls = 0x3FFF0;
     quad_uint msg_size;
     quad_uint hdr_size;
     quad_u64 msg_ea;

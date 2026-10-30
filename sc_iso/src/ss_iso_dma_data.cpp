@@ -14,7 +14,7 @@ bool ss_iso_dma_data::aligned()
 {
     if ((m_ea & 15) != 0)
         return false;
-    return ((unsigned int)m_ls & 15) == 0;
+    return (m_ls & 15) == 0;
 }
 
 void ss_iso_dma_data::chunk(const quad_uint &left, quad_uint &n)
@@ -85,8 +85,8 @@ header:
         hdr.token = token;
         hdr.cmd = cmd;
         hdr.len = len;
-        memcpy(m_ls, &hdr, sizeof(hdr));
-        if (m_dma.issue((unsigned int)m_ls, m_ea, sizeof(hdr), TAG, 0, MFC_PUT) != 0)
+        memcpy((void *)m_ls, &hdr, sizeof(hdr));
+        if (m_dma.issue(m_ls, m_ea, sizeof(hdr), TAG, 0, MFC_PUT) != 0)
             goto header_failed;
         goto data;
     }
@@ -120,8 +120,8 @@ header:
     hdr.token = SS_ISO_MSG_STATUS;
     hdr.cmd = cmd;
     hdr.len = n;
-    memcpy(m_ls, &hdr, sizeof(hdr));
-    if (m_dma.issue((unsigned int)m_ls, m_ea, sizeof(hdr), TAG, 0, MFC_PUT) != 0) {
+    memcpy((void *)m_ls, &hdr, sizeof(hdr));
+    if (m_dma.issue(m_ls, m_ea, sizeof(hdr), TAG, 0, MFC_PUT) != 0) {
         SS_ISO_ERR(err, 0x81);
         n = 0;
     }
@@ -184,12 +184,12 @@ unsigned int ss_iso_dma_data::get(const quad_ptr &buf, const quad_uint &max, uns
         SS_ISO_ERR(err, 0x81);
         return LINK_EIO;
     }
-    if (m_dma.issue((unsigned int)m_ls, m_ea, m_hdr_size, TAG, 0, MFC_GET) != 0) {
+    if (m_dma.issue(m_ls, m_ea, m_hdr_size, TAG, 0, MFC_GET) != 0) {
         SS_ISO_ERR(err, 0x82);
         return LINK_EIO;
     }
     m_dma.wait(TAG);
-    h = m_ls;
+    h = (unsigned char *)m_ls;
     if (BE32(h) != m_seq) {
         SS_ISO_ERR(err, 0x83);
         return LINK_EIO;
@@ -241,7 +241,7 @@ mbox_failed:
     return LINK_EIO;
 }
 
-ss_iso_dma_data::ss_iso_dma_data(const quad_u64 &ea, const quad_uint &size, const quad_ptr &ls,
+ss_iso_dma_data::ss_iso_dma_data(const quad_u64 &ea, const quad_uint &size, const quad_uint &ls,
                                  const quad_uint &hdr_size)
     : m_seq(1), m_ea(ea), m_size(size), m_ls(ls), m_hdr_size(hdr_size)
 {

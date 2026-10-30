@@ -74,8 +74,8 @@ SECTIONS
     */sc_iso/src/ss_iso_dma_data.o(.text._ZN15ss_iso_dma_dataD1Ev)
     */sc_iso/src/ss_iso_dma_data.o(.text._ZN15ss_iso_dma_dataD2Ev)
     . = . < 0x2350 ? 0x2350 : .;
-    */sc_iso/src/ss_iso_dma_data.o(.text._ZN15ss_iso_dma_dataC1ERKyRKjRKPhS3_)
-    */sc_iso/src/ss_iso_dma_data.o(.text._ZN15ss_iso_dma_dataC2ERKyRKjRKPhS3_)
+    */sc_iso/src/ss_iso_dma_data.o(.text._ZN15ss_iso_dma_dataC1ERKyRKjS3_S3_)
+    */sc_iso/src/ss_iso_dma_data.o(.text._ZN15ss_iso_dma_dataC2ERKyRKjS3_S3_)
     . = . < 0x23f0 ? 0x23f0 : .;
     */sc_iso/src/ss_iso_dma_data.o(.text._ZN15ss_iso_dma_data3getERKPhRKjRjS5_S5_)
     . = . < 0x27e0 ? 0x27e0 : .;

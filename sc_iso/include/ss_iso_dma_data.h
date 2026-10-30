@@ -19,7 +19,7 @@ struct ss_iso_msg_header {
 
 class ss_iso_dma_data {
 public:
-    ss_iso_dma_data(const quad_u64 &ea, const quad_uint &size, const quad_ptr &ls,
+    ss_iso_dma_data(const quad_u64 &ea, const quad_uint &size, const quad_uint &ls,
                     const quad_uint &hdr_size);
     ~ss_iso_dma_data();
 
@@ -37,7 +37,7 @@ public:
     unsigned int m_seq;
     u64 m_ea __attribute__((aligned(16)));
     unsigned int m_size __attribute__((aligned(16)));
-    unsigned char *m_ls __attribute__((aligned(16)));
+    unsigned int m_ls __attribute__((aligned(16)));
     unsigned int m_hdr_size __attribute__((aligned(16)));
 };
 
